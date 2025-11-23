@@ -1,35 +1,26 @@
-# =====================================================
-#  Makefile for Gshare Branch Predictor
-# =====================================================
+#========================================================
+# Makefile for Branch Predictor Project
+#========================================================
 
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -O2
+CFLAGS = -Wall -std=c11 -O2
+TARGET = predictor_app
 
-# Executable name
-TARGET = predictor
-
-# Object files
-OBJS = predictor.o main.o
+SRC = main.c predictor.c
+OBJ = $(SRC:.c=.o)
 
 # Default target
 all: $(TARGET)
 
-# Build target
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) -lm
+# Build executable
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
 
-# Compile source files
-predictor.o: predictor.c predictor.h
-	$(CC) $(CFLAGS) -c predictor.c
+# Compile .c -> .o
+%.o: %.c predictor.h
+	$(CC) $(CFLAGS) -c $< -o $@
 
-main.o: main.c predictor.h
-	$(CC) $(CFLAGS) -c main.c
-
-# Run simulation with an input file
-run: $(TARGET)
-	./$(TARGET) input.txt
-
-# Clean up build files
+# Clean up
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJ) $(TARGET)
 
