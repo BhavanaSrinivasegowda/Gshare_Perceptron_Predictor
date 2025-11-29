@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 
     const char *input_file = argv[1];
 
-    for (int type = 0; type <= 3; ++type) {
+    for (int type = 0; type <= 4; ++type) {
         bpType = type;
 
         FILE *fp = fopen(input_file, "r");
@@ -26,17 +26,24 @@ int main(int argc, char **argv)
 
         uint64_t total = 0;
         uint64_t correct = 0;
-        uint32_t pc;
-        char outcome_char;
+        uint64_t pc;
+        int outcome_bit;
 
-        while (fscanf(fp, "%x %c", &pc, &outcome_char) == 2) {
-            uint8_t outcome = (outcome_char == 'T' || outcome_char == 't') ? TAKEN : NOTTAKEN;
-            uint8_t pred = make_prediction(pc);
+        // Accepts lines like:
+        // x40fc96 1
+        // 0x40fc96 0
+        // 40fc96 1
+        while (fscanf(fp, "%lx %d", &pc, &outcome_bit) == 2) {
 
-            if (pred == outcome) correct++;
+            uint8_t outcome = (outcome_bit == 1) ? TAKEN : NOTTAKEN;
+            uint8_t pred = make_prediction((uint32_t)pc);
+
+            if (pred == outcome)
+                correct++;
+
             total++;
 
-            train_predictor(pc, outcome);
+            train_predictor((uint32_t)pc, outcome);
         }
 
         fclose(fp);

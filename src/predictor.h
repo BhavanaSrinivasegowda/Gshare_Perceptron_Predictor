@@ -13,6 +13,7 @@
 #define GSHARE      1
 #define TOURNAMENT  2
 #define CUSTOM      3
+#define TWOBIT      4
 
 /* Prediction outcomes */
 #define TAKEN       1
@@ -46,7 +47,7 @@ extern int phtBits;
 extern int bpType;
 extern int verbose;
 
-extern const char *bpName[4];
+extern const char *bpName[5];
 
 #endif /* PREDICTOR_H */
 

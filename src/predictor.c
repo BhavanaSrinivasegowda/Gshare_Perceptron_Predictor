@@ -2,7 +2,7 @@
 //  predictor.c                                           //
 //  Refactored Branch Predictor Implementation            //
 //  Supports: Static(Perceptron), GShare, Tournament,     //
-//            Custom (GShare + Perceptron chooser)        //
+//            Custom (GShare + Perceptron chooser), 2-bit //
 //========================================================//
 
 #include <stdio.h>
@@ -16,7 +16,7 @@
 //      Predictor Configuration       //
 //------------------------------------//
 
-const char *bpName[4] = { "Perceptron", "Gshare", "Tournament", "Custom" };
+const char *bpName[5] = { "Perceptron", "Gshare", "Tournament", "Custom", "2-bit" };
 
 int ghistoryBits   = 12;   // global history length for gshare/tournament chooser
 int globalBits     = 12;   // global-only BHT size (2^globalBits entries)
@@ -52,6 +52,10 @@ static int percep_theta = 0;
 static int8_t percep_weight_max = 127;
 static int8_t percep_weight_min = -127;
 
+// 2-bit predictor
+static int twobitIndexBits = 12;
+static uint8_t *twobit_table = NULL;
+
 //------------------------------------//
 //          Utility functions         //
 //------------------------------------//
@@ -70,6 +74,34 @@ static inline int8_t clamp_weight(int32_t w) {
     if (w > percep_weight_max) return percep_weight_max;
     if (w < percep_weight_min) return percep_weight_min;
     return (int8_t)w;
+}
+
+//------------------------------------//
+//             2-bit code             //
+//------------------------------------//
+
+static void init_twobit(void) {
+    int entries = 1 << twobitIndexBits;
+    twobit_table = (uint8_t *)malloc(entries * sizeof(uint8_t));
+    if (!twobit_table) { fprintf(stderr, "malloc twobit_table failed\n"); exit(1); }
+    for (int i = 0; i < entries; ++i) twobit_table[i] = WN;
+}
+
+static uint8_t twobit_predict(uint32_t pc) {
+    uint32_t idx = pc & ((1u << twobitIndexBits) - 1u);
+    uint8_t ctr = twobit_table[idx];
+    return (ctr == WT || ctr == ST) ? TAKEN : NOTTAKEN;
+}
+
+static void twobit_train(uint32_t pc, uint8_t outcome) {
+    uint32_t idx = pc & ((1u << twobitIndexBits) - 1u);
+    uint8_t state = twobit_table[idx];
+    
+    if (outcome == TAKEN) {
+        if (state < ST) twobit_table[idx] = state + 1;
+    } else {
+        if (state > SN) twobit_table[idx] = state - 1;
+    }
 }
 
 //------------------------------------//
@@ -307,6 +339,7 @@ void init_predictor(void) {
     printf("Initializing Predictor...\n");
 
     switch (bpType) {
+        case TWOBIT: init_twobit(); break;
         case GSHARE: init_gshare(); break;
         case STATIC: init_perceptron(); break;
         case TOURNAMENT:
@@ -332,6 +365,7 @@ void init_predictor(void) {
 
 uint8_t make_prediction(uint32_t pc) {
     switch (bpType) {
+        case TWOBIT: return twobit_predict(pc);
         case GSHARE: return gshare_predict(pc);
         case STATIC: return perceptron_predict(pc);
         case TOURNAMENT: return tournament_predict(pc);
@@ -342,6 +376,7 @@ uint8_t make_prediction(uint32_t pc) {
 
 void train_predictor(uint32_t pc, uint8_t outcome) {
     switch (bpType) {
+        case TWOBIT: twobit_train(pc, outcome); break;
         case GSHARE: gshare_train(pc, outcome); break;
         case STATIC: perceptron_train(pc, outcome); break;
         case TOURNAMENT: train_tournament(pc, outcome); break;
@@ -355,6 +390,7 @@ void train_predictor(uint32_t pc, uint8_t outcome) {
 //------------------------------------//
 
 void cleanup_predictor(void) {
+    if (twobit_table) { free(twobit_table); twobit_table = NULL; }
     if (gshare_bht) { free(gshare_bht); gshare_bht = NULL; }
     if (global_bht) { free(global_bht); global_bht = NULL; }
     if (local_history_table) { free(local_history_table); local_history_table = NULL; }
