@@ -23,7 +23,25 @@ and Perceptron’s ability to learn complex patterns using a linear classifier �
 - Evaluation framework: ability to feed branch traces, simulate prediction, and compute misprediction rates / accuracy  
 
 ## How to Build & Run  
-git clone https://github.com/your-username/Gshare_Perceptron_Predictor.git
-cd Gshare_Perceptron_Predictor/src
-make clean
-make
+- git clone https://github.com/your-username/Gshare_Perceptron_Predictor.git
+- cd Gshare_Perceptron_Predictor/src
+- make clean
+- make
+- ./predictor_app --<options> --verbose ../traces/<input_file_name>
+- <options> = gshare, perceptron, custom, tournament, 2bit
+
+##Configurable Parameters & Tuning
+#Gshare
+- Global history length (number of past branch outcomes to maintain)
+- Size of the pattern history table (PHT)
+
+#Perceptron
+- Number of perceptrons / table size
+- History length 
+- Weight representation
+- Threshold for perceptron output to decide “taken” vs “not taken”
+
+#Hybrid selection mechanism
+- The “chooser” table logic that selects which predictor to trust per branch based on indexing of gshare
+
+##The above preceptron accuracy is compared with Tounament and 2-Bit predictor for performance evaluation. The predictors are implemented in the same system.
