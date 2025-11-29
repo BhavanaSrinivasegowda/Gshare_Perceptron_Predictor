@@ -42,8 +42,8 @@ static uint8_t *local_bht = NULL;
 
 static uint8_t *chooser_table = NULL;
 
-static uint8_t perceptronIndexBits = 7;
-static uint8_t perceptronHistoryLen = 22;
+uint8_t perceptronIndexBits = 7;
+uint8_t perceptronHistoryLen = 22;
 static int8_t *perceptron_table = NULL;
 static uint32_t percep_ghr = 0;
 static int percep_num_entries = 0;
@@ -53,7 +53,7 @@ static int8_t percep_weight_max = 127;
 static int8_t percep_weight_min = -127;
 
 // 2-bit predictor
-static int twobitIndexBits = 12;
+int twobitIndexBits = 12;
 static uint8_t *twobit_table = NULL;
 
 //------------------------------------//

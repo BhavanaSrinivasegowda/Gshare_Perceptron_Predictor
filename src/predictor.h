@@ -19,13 +19,13 @@
 #define TAKEN       1
 #define NOTTAKEN    0
 
-/* Two-bit counter states (used by BHT/chooser) */
-#define SN 0  /* Strongly Not Taken */
-#define WN 1  /* Weakly Not Taken */
-#define WT 2  /* Weakly Taken */
-#define ST 3  /* Strongly Taken */
+/* Two-bit counter states */
+#define SN 0
+#define WN 1
+#define WT 2
+#define ST 3
 
-/* Local predictor multi-bit states (example for 3-bit-like) */
+/* Local predictor multi-bit states */
 #define N2 0
 #define N1 1
 #define N0 2
@@ -39,13 +39,18 @@ uint8_t make_prediction(uint32_t pc);
 void train_predictor(uint32_t pc, uint8_t outcome);
 void cleanup_predictor(void);
 
-/* Predictor configuration */
+/* Predictor configuration (from predictor.c) */
 extern int ghistoryBits;
+extern int globalBits;
 extern int tournamentBits;
 extern int phtIndexBits;
 extern int phtBits;
 extern int bpType;
 extern int verbose;
+
+extern uint8_t perceptronIndexBits;
+extern uint8_t perceptronHistoryLen;
+extern int twobitIndexBits;
 
 extern const char *bpName[5];
 
