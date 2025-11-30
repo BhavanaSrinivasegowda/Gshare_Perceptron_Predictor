@@ -54,5 +54,8 @@ extern int twobitIndexBits;
 
 extern const char *bpName[5];
 
+extern uint64_t chooser_use_gshare;
+extern uint64_t chooser_use_percep;
+
 #endif /* PREDICTOR_H */
 

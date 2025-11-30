@@ -56,6 +56,12 @@ static int8_t percep_weight_min = -127;
 int twobitIndexBits = 12;
 static uint8_t *twobit_table = NULL;
 
+// ----------------------------------
+// Chooser statistics (Custom predictor)
+// ----------------------------------
+uint64_t chooser_use_gshare = 0;
+uint64_t chooser_use_percep = 0;
+
 //------------------------------------//
 //          Utility functions         //
 //------------------------------------//
@@ -308,10 +314,24 @@ static void train_tournament(uint32_t pc, uint8_t outcome) {
 static uint8_t custom_predict(uint32_t pc) {
     uint8_t g_pred = gshare_predict(pc);
     uint8_t p_pred = perceptron_predict(pc);
+
     uint32_t chooser_idx = (uint32_t)(ghr & ((1u << tournamentBits) - 1u));
     uint8_t choice = chooser_table ? chooser_table[chooser_idx] : WN;
-    return (choice == SN || choice == WN) ? g_pred : p_pred;
+
+    uint8_t final_pred;
+
+    // Chooser interpretation: lower half → GShare, upper half → Perceptron
+    if (choice == SN || choice == WN) {
+        chooser_use_gshare++;
+        final_pred = g_pred;
+    } else {
+        chooser_use_percep++;
+        final_pred = p_pred;
+    }
+
+    return final_pred;
 }
+
 
 static void train_custom(uint32_t pc, uint8_t outcome) {
     uint8_t g_pred = gshare_predict(pc);
@@ -399,5 +419,7 @@ void cleanup_predictor(void) {
     if (perceptron_table) { free(perceptron_table); perceptron_table = NULL; }
     ghr = 0;
     percep_ghr = 0;
+    chooser_use_gshare = 0;
+    chooser_use_percep = 0;
 }
 
