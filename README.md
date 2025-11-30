@@ -27,7 +27,8 @@ and Perceptronâ€™s ability to learn complex patterns using a linear classifier â
 - cd Gshare_Perceptron_Predictor/src
 - make clean
 - make
-- ./predictor_app --<options> --verbose ../traces/<input_file_name>
+- ./predictor_app ../traces/<input_file_name> --verbose (for running all predictors)
+- ./predictor_app ../traces/<input_file_name> --<options> --verbose
 - <options> = gshare, perceptron, custom, tournament, 2bit
 
 ##Configurable Parameters & Tuning
