@@ -29,7 +29,7 @@ and Perceptronâ€™s ability to learn complex patterns using a linear classifier â
 - make
 - ./predictor_app ../traces/<input_file_name> --verbose (for running all predictors)
 - ./predictor_app ../traces/<input_file_name> --<options> --verbose
-- <options> = gshare, perceptron, custom, tournament, 2bit
+- --<options> = --gshare, --perceptron, --custom, --tournament, --2bit
 
 ##Configurable Parameters & Tuning
 #Gshare
