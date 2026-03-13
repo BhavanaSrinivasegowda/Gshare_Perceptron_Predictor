@@ -42,6 +42,9 @@ and Perceptron’s ability to learn complex patterns using a linear classifier �
 - Weight representation
 - Threshold for perceptron output to decide “taken” vs “not taken”
 
+NOTES: -
+- helps in reducing BTB failures.
+
 #Hybrid selection mechanism
 - The “chooser” table logic that selects which predictor to trust per branch based on indexing of gshare
 
